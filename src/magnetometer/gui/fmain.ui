@@ -161,7 +161,7 @@
            <item>
             <widget class="QLineEdit" name="lineedit_field_strength">
              <property name="text">
-              <string>31938.6</string>
+              <string>48940</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -204,7 +204,15 @@
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="layout_save_calibration">
+          <layout class="QVBoxLayout" name="layout_save_calibration">
+            <item>
+            <widget class="QPushButton" name="button_save_calibration_flash">
+             <property name="text">
+              <string>Save to FLASH</string>
+             </property>
+            </widget>
+           </item>
+ 
            <item>
             <widget class="QPushButton" name="button_save_calibration_json">
              <property name="text">

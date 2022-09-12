@@ -1,6 +1,8 @@
 #include "magnetometer/calibration/calibrator.h"
 
 #include <ros/node_handle.h>
+#include "mowgli/SetCfg.h"
+#include "std_srvs/Empty.h"
 
 #include "common/calibration/variables_center.h"
 #include "common/calibration/variables_radius.h"
@@ -38,6 +40,118 @@ calibrator::~calibrator()
     {
         calibrator::m_thread.join();
     }
+}
+
+// MOWGLI
+// save double as name in mowgli flash cfg
+bool calibrator::flash_save_var(const char *name, double val)
+{
+   char* barray = reinterpret_cast<char*>(&val);
+   ros::NodeHandle n;
+   ros::ServiceClient client = n.serviceClient<mowgli::SetCfg>("mowgli/SetCfg");
+   mowgli::SetCfg srv;
+
+   srv.request.type = 3; // double
+   srv.request.name = name;
+   // double is 8 bytes
+   for(int i=0;i<8;i++)
+   {
+      srv.request.data.push_back(barray[i]);
+   }
+   return( client.call(srv) );
+}
+
+// MOWGLI
+// reboot to use new mag cal values
+bool calibrator::mowgli_reboot()
+{
+   ros::NodeHandle n;
+   ros::ServiceClient client = n.serviceClient<std_srvs::Empty>("mowgli/Reboot");
+   std_srvs::Empty srv;
+
+   return( client.call(srv) );
+}
+
+
+// MOWGLI
+// save calibration values to flash
+bool calibrator::save_calibration_flash()
+{
+    bool status; 
+
+    double d;
+
+    /*********************************************/
+    /* SAVE HARD IRON (BIAS) COMPENSATION VALUES */
+    /*********************************************/
+    d = calibrator::m_calibration(0,3);
+    status = flash_save_var("mag_bias_x", d); // row 0, col 3
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(1,3);
+    status = flash_save_var("mag_bias_y", d); // row 1, col 3
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(2,3);
+    status = flash_save_var("mag_bias_z", d); // row 2, col 3
+    if (!status) return(false);
+    usleep(250000);
+
+    /****************************************************/
+    /* SAVE SOFT IRON (DISTORTION) COMPENSATION VALUES  */
+    /****************************************************/
+    // ROW 0
+    d = calibrator::m_calibration(0,0);
+    status = flash_save_var("mag_dist_00", d); // row 0, col 0
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(0,1);
+    status = flash_save_var("mag_dist_01", d); // row 0, col 1
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(0,2);
+    status = flash_save_var("mag_dist_02", d); // row 0, col 2 
+    if (!status) return(false);
+    usleep(250000);
+
+    // ROW 1
+
+    d = calibrator::m_calibration(1,0);
+    status = flash_save_var("mag_dist_10", d); // row 1, col 0
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(1,1);
+    status = flash_save_var("mag_dist_11", d); // row 1, col 1
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(1,2);
+    status = flash_save_var("mag_dist_12", d); // row 1, col 2
+    if (!status) return(false);
+    usleep(250000);
+
+    // ROW 3
+
+    d = calibrator::m_calibration(2,0);
+    status = flash_save_var("mag_dist_20", d); // row 2, col 0
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(2,1);
+    status = flash_save_var("mag_dist_21", d); // row 2, col 1
+    if (!status) return(false);
+    usleep(250000);
+
+    d = calibrator::m_calibration(2,2);
+    status = flash_save_var("mag_dist_22", d); // row 2, col 2
+    if (!status) return(false);
+    usleep(250000);
+    return true;
 }
 
 // METHODS

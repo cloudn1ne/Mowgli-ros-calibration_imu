@@ -207,6 +207,23 @@ void fmain::on_button_save_calibration_yaml_clicked()
         }
     }
 }
+
+// save calibration to FLASH
+void fmain::on_button_save_calibration_flash_clicked()
+{
+    if (fmain::m_calibrator->save_calibration_flash())
+    {
+       QMessageBox message_box(QMessageBox::Icon::Warning, "", "Successfully saved Magnetometer calibration to Mowgli CfgFlash. Mowgli will now reboot to apply the new settings.", QMessageBox::StandardButton::Ok);
+       message_box.exec();
+       fmain::m_calibrator->mowgli_reboot();
+    }
+    else
+    {
+       QMessageBox message_box(QMessageBox::Icon::Warning, "", "Error saving Magnetometer configuration to Mowgli CfgFlash.", QMessageBox::StandardButton::Ok);
+       message_box.exec();
+    }
+}
+
 void fmain::on_checkbox_graph_fit_stateChanged(int state)
 {
     fmain::m_graph->fit_visible(state == Qt::CheckState::Checked);

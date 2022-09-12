@@ -56,6 +56,11 @@ public:
     /// \returns TRUE if the save was successful, otherwise FALSE.
     bool save_calibration_yaml(std::string filepath);
 
+    /// MOWGLI
+    bool flash_save_var(const char *name, double val);
+    bool save_calibration_flash();
+    bool mowgli_reboot();
+
 signals:
     /// \brief Indicates that the calibration routine has completed.
     /// \param success TRUE if the calibration succeeded, otherwise FALSE.

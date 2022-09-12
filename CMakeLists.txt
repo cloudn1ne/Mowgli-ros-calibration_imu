@@ -10,6 +10,7 @@ project(calibration_imu)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs_ext
+  message_generation
   ifopt
   rosbag)
 

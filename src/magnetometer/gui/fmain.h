@@ -41,6 +41,7 @@ private slots:
     void on_button_calibrate_clicked();
     void on_button_save_calibration_json_clicked();
     void on_button_save_calibration_yaml_clicked();
+    void on_button_save_calibration_flash_clicked();
     void on_checkbox_graph_fit_stateChanged(int state);
     void on_checkbox_graph_calibrated_stateChanged(int state);
     void on_checkbox_graph_truth_stateChanged(int state);
